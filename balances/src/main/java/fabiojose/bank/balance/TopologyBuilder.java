@@ -1,4 +1,4 @@
-package fabiojose.kafka.streams;
+package fabiojose.bank.balance;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -10,9 +10,9 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.Produced;
 
-import fabiojose.kafka.streams.model.Account;
-import fabiojose.kafka.streams.model.StatementEvent;
-import fabiojose.kafka.streams.model.Transaction;
+import fabiojose.bank.balance.model.Account;
+import fabiojose.bank.balance.model.StatementEvent;
+import fabiojose.bank.balance.model.Transaction;
 import io.quarkus.kafka.client.serialization.JsonbSerde;
 import lombok.extern.slf4j.Slf4j;
 

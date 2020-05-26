@@ -1,45 +1,10 @@
-plugins {
-    id 'java'
-    id 'io.quarkus'
+allprojects {
+	repositories {
+	     mavenLocal()
+	     mavenCentral()
+	}
 }
 
-repositories {
-     mavenLocal()
-     mavenCentral()
-}
-
-dependencies {
-    implementation 'io.quarkus:quarkus-kafka-streams'
-    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-resteasy-jsonb'
-
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation 'io.rest-assured:rest-assured'
-
-    compileOnly 'org.projectlombok:lombok:1.18.10'
-    annotationProcessor 'org.projectlombok:lombok:1.18.10'
-
-    testImplementation 'org.mockito:mockito-junit-jupiter:3.2.4'
-}
-
-group 'fabiojose.kafka.streams'
-version '1.0-SNAPSHOT'
-
-compileJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << '-parameters'
-}
-
-compileTestJava {
-    options.encoding = 'UTF-8'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-test {
-    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+subprojects {
+	version='1.0.0'
 }

@@ -1,4 +1,4 @@
-package fabiojose.kafka.streams.model;
+package fabiojose.bank.statement.model;
 
 import java.util.UUID;
 

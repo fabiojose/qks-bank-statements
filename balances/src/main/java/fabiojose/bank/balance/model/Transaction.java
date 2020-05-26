@@ -1,4 +1,4 @@
-package fabiojose.kafka.streams.model;
+package fabiojose.bank.balance.model;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

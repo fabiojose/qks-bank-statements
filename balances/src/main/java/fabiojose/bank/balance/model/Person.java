@@ -1,4 +1,4 @@
-package fabiojose.kafka.streams.model;
+package fabiojose.bank.balance.model;
 
 import java.time.LocalDate;
 import java.util.UUID;

@@ -8,4 +8,9 @@ pluginManagement {
       id 'io.quarkus' version "${quarkusPluginVersion}"
     }
 }
-rootProject.name='kafka-streams-quarkus'
+
+rootProject.name='qks-bank-statements'
+
+include 'statements'
+include 'balances'
+

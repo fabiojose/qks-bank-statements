@@ -1,4 +1,4 @@
-package fabiojose.kafka.streams.model;
+package fabiojose.bank.balance.model;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -27,4 +27,10 @@ public class StatementEvent {
 
     private double balance;
 
+    public StatementEvent computeBalance(Transaction t) {
+
+        this.balance += t.getAmount();
+
+        return this;
+    }
 }
