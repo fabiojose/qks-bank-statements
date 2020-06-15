@@ -115,30 +115,108 @@ kafka-console-consumer.sh \
   --from-beginning
 ```
 
-## Run the uber jar
+### `balances`
+
+This is the topic with account balances.
+
+```bash
+kafka-topics.sh --create \
+  --bootstrap-server localhost:9092 \
+  --replication-factor 1 \
+  --partitions 7 \
+  --topic 'balances' \
+  --config 'retention.ms=-1' \
+  --config 'cleanup.policy=compact'
+```
+
+Consume the `balances` to see the things happening:
+
+```bash
+kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic 'balances' \
+  --property print.key=true \
+  --property print.timestamp=true \
+  --from-beginning
+```
+
+## Statements APP
+
+### Run the uber jar
 
 ```bash
 java \
   -Dquarkus.kafka-streams.bootstrap-servers=localhost:9092 \
-  -Dquarkus.kafka-streams.application-id=statements \
-  -Dquarkus.kafka-streams.application-server=localhost:8080 \
+  -Dquarkus.kafka-streams.application-id=statements-v1.0 \
+  -Dquarkus.kafka-streams.application-server=localhost:30080 \
+  -Dquarkus.http.port=30080 \
   -Dquarkus.kafka-streams.topics=accounts,transactions,statements \
-  -jar build/kafka-streams-quarkus-1.0-SNAPSHOT-runner.jar
+  -Dkafka-streams.auto.offset.reset=earliest \
+  -jar statements/build/statements-1.0-SNAPSHOT-runner.jar
 ```
 
-## Run the native executable
+### Run the native executable
 
 ```bash
-build/kafka-streams-quarkus-1.0-SNAPSHOT-runner \
+statements/build/statements-1.0-SNAPSHOT-runner \
   -Dquarkus.kafka-streams.bootstrap-servers=localhost:9092 \
-  -Dquarkus.kafka-streams.application-id=statements \
-  -Dquarkus.kafka-streams.application-server=localhost:8080 \
-  -Dquarkus.kafka-streams.topics=accounts,transactions,statements
+  -Dquarkus.kafka-streams.application-id=statements-v1.0 \
+  -Dquarkus.kafka-streams.application-server=localhost:30080 \
+  -Dquarkus.kafka-streams.topics=accounts,transactions,statements \
+  -Dkafka-streams.auto.offset.reset=earliest
+```
+
+## Balances APP
+
+### Run the uber jar
+
+```bash
+java \
+  -Dquarkus.kafka-streams.bootstrap-servers=localhost:9092 \
+  -Dquarkus.kafka-streams.application-id=balances-v1.0 \
+  -Dquarkus.kafka-streams.application-server=localhost:30081 \
+  -Dquarkus.http.port=30081 \
+  -Dquarkus.kafka-streams.topics=statements,balances \
+  -Dkafka-streams.auto.offset.reset=earliest \
+  -jar balances/build/balances-1.0-SNAPSHOT-runner.jar
+```
+
+### Run the native executable
+
+```bash
+balances/build/balances-1.0-SNAPSHOT-runner \
+  -Dquarkus.kafka-streams.bootstrap-servers=localhost:9092 \
+  -Dquarkus.kafka-streams.application-id=balances-v1.0 \
+  -Dquarkus.kafka-streams.application-server=localhost:30081 \
+  -Dquarkus.kafka-streams.topics=statements,balances \
+  -Dkafka-streams.auto.offset.reset=earliest
 ```
 
 # pass-through options
+
+```properties
 kafka-streams.cache.max.bytes.buffering=10240
 kafka-streams.commit.interval.ms=1000
 kafka-streams.metadata.max.age.ms=500
 kafka-streams.auto.offset.reset=earliest
 kafka-streams.metrics.recording.level=DEBUG
+```
+
+## The Solution in Numbers
+
+- accounts: 40mi = 40 000 000
+- transactions: 5000k per minute
+
+### Payload Size
+
+- accounts: 
+- transactions: 
+- statements: 
+- balances:
+
+### Partitions
+
+- accounts:
+- transactions: 
+- statements:
+- balances:

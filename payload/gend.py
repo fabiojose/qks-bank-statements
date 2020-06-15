@@ -14,6 +14,7 @@ args = parser.parse_args()
 total=int(args.records)
 accounts_file="accounts.txt"
 transactions_file="transactions.txt"
+balances_file="balances.txt"
 
 base_date = datetime.now(timezone.utc)
 
@@ -23,8 +24,12 @@ if os.path.exists(accounts_file):
 if os.path.exists(transactions_file):
     os.remove(transactions_file)
 
+if os.path.exists(balances_file):
+    os.remove(balances_file)
+
 a = open(accounts_file, "w")
 t = open(transactions_file, "w")
+b = open(balances_file, "w")
 
 for x in range(total):
     data = {}
@@ -41,9 +46,11 @@ for x in range(total):
 
     account = json.dumps(data)
 
+    # Accounts
     a.write(key + "|" + account)
     a.write("\n")
 
+    balance = 0
     # Transactions per account
     t_count = randint(2, 6)
     for txi in range(t_count):
@@ -62,12 +69,21 @@ for x in range(total):
         else:
             tx['title'] = "Transaction " + tx['identifier']
             tx['info'] = "Some transaction info"
-            tx['amount'] = uniform(-325, 650)
+            tx['amount'] = format(uniform(-325, 650), '.4f')
         
+        balance = balance + float(tx['amount'])
+
         transaction = json.dumps(tx)
 
+        # Transactions
         t.write(key + "|" + transaction)
         t.write("\n")
+
+    # Balances for assertions
+    bl = {}
+    bl['balance'] = format(balance, '.4f')
+    b.write(key + "|" + json.dumps(bl))
+    b.write("\n")
 
 a.close()
 t.close()

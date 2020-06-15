@@ -1,0 +1,1 @@
+be746658-ac94-4cdc-88b7-0d4a4cf2d051|{"title": "Transaction af2acbd5-4dad-4bfc-a6e9-7fa0954a14b7", "accountIdentifier": "be746658-ac94-4cdc-88b7-0d4a4cf2d051", "identifier": "af2acbd5-4dad-4bfc-a6e9-7fa0954a14b7", "amount": "-5.0", "info": "Some transaction info", "time": "2020-06-08T10:13:40.404478-03:00"}
