@@ -7,12 +7,13 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.GlobalKTable;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
+import org.apache.kafka.streams.state.Stores;
 
-import fabiojose.bank.balance.model.Account;
+import fabiojose.bank.balance.model.Balance;
 import fabiojose.bank.balance.model.StatementEvent;
-import fabiojose.bank.balance.model.Transaction;
 import io.quarkus.kafka.client.serialization.JsonbSerde;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,59 +29,42 @@ public class TopologyBuilder {
     @Produces
     public Topology build() {
 
-        // ####
-        // Serde for Account
-        JsonbSerde<Account> accountSerde = 
-            new JsonbSerde<>(Account.class);
-
-        // #### 
-        // Serde for Transaction
-        JsonbSerde<Transaction> transactionSerde = 
-            new JsonbSerde<>(Transaction.class);
-
-        // ####
+       // ####
         // Serde for StatementEvent
-        JsonbSerde<StatementEvent> statementEventSerde = 
+        final JsonbSerde<StatementEvent> statementEventSerde = 
             new JsonbSerde<>(StatementEvent.class);
+
+        // ####
+        // Serde for Balance
+        final JsonbSerde<Balance> balanceSerde = 
+            new JsonbSerde<>(Balance.class);
+
+        // ####
+        // Balance store
+        final KeyValueBytesStoreSupplier balanceStore = 
+            Stores.persistentKeyValueStore("balances-store");
 
         final StreamsBuilder builder = new StreamsBuilder();
 
         // ####
-        // Table with accounts
-        GlobalKTable<String, Account> accounts = 
-            builder.globalTable("accounts", 
-                Consumed.with(Serdes.String(), accountSerde));
-
-        // ####
         // Build the stream!
         builder.stream(
-            "transactions", Consumed.with(Serdes.String(), transactionSerde)
+            "statements", Consumed.with(Serdes.String(), statementEventSerde)
         )
-        .join(accounts,
-            (accountId, tx) -> accountId,
-            (tx, account) -> {
+        .groupByKey()
+        .aggregate(Balance::new,
+            (accountId, statement, balance) ->{
+                log.info("{}", statement);
 
-                log.info("Transaction {}", tx);
-                log.info("Account     {}", account);
-
-                StatementEvent statement = new StatementEvent();
-
-                statement.setAccountIdentifier(account.getIdentifier());
-                statement.setAccountOwnerIdentifier(
-                    account.getOwnedBy().getIdentifier());
-                statement.setAccountOwnerName(
-                    account.getOwnedBy().getGivenName());
-
-                statement.setTransactionIdentifier(tx.getIdentifier());
-                statement.setTransactionTime(tx.getTime());
-                statement.setTransactionTitle(tx.getTitle());
-                statement.setTransactionInfo(tx.getInfo());
-                statement.setTransactionAmount(tx.getAmount());
-
-                return statement;
-            }
-        )
-        .to("statements", Produced.with(Serdes.String(), statementEventSerde));
+                // ####
+                // Update the current balance 
+                return balance.update(statement);
+            },
+            Materialized.<String, Balance>as(balanceStore)
+                .withValueSerde(balanceSerde)
+                .withKeySerde(Serdes.String()))
+        .toStream()
+        .to("balances", Produced.with(Serdes.String(), balanceSerde));
 
         return builder.build();
     }

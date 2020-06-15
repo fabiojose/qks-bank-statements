@@ -23,14 +23,7 @@ public class StatementEvent {
     private ZonedDateTime transactionTime;
     private String transactionTitle;
     private String transactionInfo;
+
     private double transactionAmount;
 
-    private double balance;
-
-    public StatementEvent computeBalance(Transaction t) {
-
-        this.balance += t.getAmount();
-
-        return this;
-    }
 }
