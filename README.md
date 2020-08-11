@@ -204,8 +204,8 @@ kafka-streams.metrics.recording.level=DEBUG
 
 ## The Solution in Numbers
 
-- accounts: 40mi = 40 000 000
-- transactions: 5000k per minute
+- accounts: `40mi = 40 000 000`
+- transactions: `33600k per minute, 560 per second`
 
 ### Payload Size
 

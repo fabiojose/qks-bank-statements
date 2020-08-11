@@ -32,7 +32,7 @@ for x in range(total):
 
     owned_by = {}
     owned_by['identifier'] = str(uuid.uuid4())
-    owned_by['givenName'] = "Given" + str(x)
+    owned_by['givenName'] = "Given Owner Name " + str(x)
 
     data['ownedBy'] = owned_by
 
@@ -43,7 +43,7 @@ for x in range(total):
     # Balance for assertions
     balance = 0
     
-    t_count = randint(2, 10)
+    t_count = randint(2, 20)
     for txi in range(t_count):
         tx = {}
 
